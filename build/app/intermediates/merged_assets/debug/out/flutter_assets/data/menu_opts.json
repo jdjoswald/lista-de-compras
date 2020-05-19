@@ -1,0 +1,12 @@
+{
+    "nombreApp" : "Componentes",
+    "rutas" : [
+        
+        {
+            "ruta" : "listaitem",
+            "icon" : "List",
+            "texto": "iot",
+            "id":1
+        }
+    ]
+}
