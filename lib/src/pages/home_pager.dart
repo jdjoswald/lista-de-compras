@@ -45,18 +45,34 @@ class _HomepagerState extends State<Homepager> {
       final List<Widget> opciones=[];
       data.forEach((opt){
 
-        final widgetTemp = ListTile(
+        final widgetTemp = Dismissible(
+          key: ObjectKey(opt), 
+          child: ListTile(
           title: Text(opt['texto']),
           leading: Geticon(opt["icon"]),
           trailing: Icon(Icons.arrow_right),
           onTap:(){ Navigator.pushNamed(context, opt['ruta']);}
-        );
+        ) );
         opciones..add(widgetTemp)
                 ..add(Divider());
+       
 
 
         
       });
+
+      //   final widgetTemp = ListTile(
+      //     title: Text(opt['texto']),
+      //     leading: Geticon(opt["icon"]),
+      //     trailing: Icon(Icons.arrow_right),
+      //     onTap:(){ Navigator.pushNamed(context, opt['ruta']);}
+      //   );
+      //   opciones..add(widgetTemp)
+      //           ..add(Divider());
+
+
+        
+      // });
       return opciones;
     }
 
@@ -97,7 +113,7 @@ class _HomepagerState extends State<Homepager> {
   }
   Widget _crearinput() {
     return TextField(
-     
+      
       decoration: InputDecoration(
 
         labelText: "Nombre",

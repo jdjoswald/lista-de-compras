@@ -6,14 +6,16 @@
             "articulo" : "raspberry",
             "precio" : 200,
             "link": "iot",
+            "divisa":"Peso",
             "id":1,
             "estado": true
             
         },
         {
-            "articulo" : "raspberry",
+            "articulo" : "raspberry2",
             "precio" : 200,
             "link": "iot",
+            "divisa":"Dolar",
             "id":2,
             "estado": false
             
