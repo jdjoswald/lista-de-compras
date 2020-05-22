@@ -5,15 +5,17 @@
         {
             "articulo" : "raspberry",
             "precio" : 200,
-            "link": "iot",
+            "link": "www.ebay.com",
+            "divisa":"Peso",
             "id":1,
             "estado": true
             
         },
         {
-            "articulo" : "raspberry",
+            "articulo" : "raspberry2",
             "precio" : 200,
-            "link": "iot",
+            "link": "www.amazon.com",
+            "divisa":"Dolar",
             "id":2,
             "estado": false
             

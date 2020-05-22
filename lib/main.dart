@@ -8,7 +8,7 @@ import 'package:listadecompras/src/routes/routes.dart';
 void main() => runApp(MyApp());
  
 class MyApp extends StatelessWidget {
-  ListaDatabase db = ListaDatabase();
+  // ListaDatabase db = ListaDatabase();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
