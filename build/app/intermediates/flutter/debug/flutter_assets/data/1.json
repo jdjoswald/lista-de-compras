@@ -5,15 +5,17 @@
         {
             "articulo" : "raspberry",
             "precio" : 200,
-            "link": "iot",
+            "link": "www.ebay.com",
+            "divisa":"Peso",
             "id":1,
             "estado": true
             
         },
         {
-            "articulo" : "raspberry",
+            "articulo" : "raspberry2",
             "precio" : 200,
-            "link": "iot",
+            "link": "https://www.ebay.com/itm/Rechargeable-3-6V-3600mAh-Replacement-Durable-Battery-Pack-For-PSP-1000-AC1595/143476400287?_trkparms=ispr%3D1&hash=item2167dc209f:g:ZowAAOSwbjpd-yMJ&enc=AQAEAAACcIQvEcHUrT7nmUC3yY5qbPyaBN1nJEDYW8MyypsJPgXKRMnMe4hpRS1YrOJd%2BCnTxVGrrI7UIXSTV96x0%2BrH6Ncw0wyIArPUmcFlFq4cAqRN5c0G8zEiyYUMe3aTHNa8J579XV4vvI2rPQL37%2FXQBgDC3ok%2B8pe6tyDPeya%2Bwbfjj7a4Y6jSdf0MT8mYU%2FuA2K%2BLESV1qGGZco2VEuWVFfUUA6vH2o8NKaYn2rTCGV8DIAEZJlCfoFG6I6nUPbxXoxZm%2FMK5%2FCV1Sf9m3JdZrN766yukjEBUcYxY8YgLMKCL0%2BQa1A0%2B28rZGAt1lkzKjiqcSkZa2b%2F7S4RW57jxFbMRopnk091v74P0Z9ToqPRAUg01fiiQawRPtQMRK53EVIvc1z%2BYglS06QdvoZWL18mR3ktvDRkiNdTb19vTnD67iJV1NNRCwEDaHXubxBJVnX%2B0I0z2OJHYoD3ABndX%2BUaGdUvp%2BMcsAdUrfA5JQfeiiskVF2h52ifTCKYA2LizyWS%2FviZPa30R7jmi%2BuN30cs0mEaHc%2BR32UuiYoVsMllHyUjc1yRUtDEvmw7dAaoQjEyow%2BQcp2DXnvbKuZzsBQNxqURmE8mVoHwBiKa9WuOOvY0u2pttX2ddCsfl%2BGMyU0m%2FU4OlIWZ6BE%2B197Omd2UWIi4jW5b1U2PNCckwfiryS0M7rNwv9vjDJaw8N6ZVO3mes1bEVklcj89t%2FUaBQET5xoOHy%2F0n%2BG4J2jqCw2LRKEGM5AZwr%2F6Lc51hGXbWuUmie%2FrRWa%2Bwi4pxvuzZn%2BWEhPMyxj2QesxVkNYsdV9WExGN6lMLe4BInaAUJT8ZPw%3D%3D&checksum=143476400287c248d54d165b4620836eb2cf4e9ecc85",
+            "divisa":"Dolar",
             "id":2,
             "estado": false
             
