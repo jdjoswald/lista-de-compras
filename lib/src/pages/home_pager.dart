@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:listadecompras/src/database/database.dart';
 import 'package:listadecompras/src/providers/icono_string.dart';
 import 'package:listadecompras/src/providers/menu_provider.dart';
 
@@ -9,6 +10,7 @@ class Homepager extends StatefulWidget {
 }
 
 class _HomepagerState extends State<Homepager> {
+  Shoplistdb db = Shoplistdb();
   String _nombre="";
   List<int> _alert=[200,300];
   List<String>listas=["KLK"];
@@ -35,33 +37,50 @@ class _HomepagerState extends State<Homepager> {
           
   Widget _Listasdecompras() {
       return FutureBuilder(
-        future:menuProvider.cargardata() ,
-        builder: (context,AsyncSnapshot<List<dynamic>> snapshot ){
-          return ListView(
-              children: _listaItems(listas, context),
-          );
+        future:db.InitDB(),
+        builder: (BuildContext context, snapshot ){
+          if (snapshot.connectionState == ConnectionState.done){
+            return RefreshIndicator(  
+          onRefresh: refresh,
+          child:ListView(
+              children: _listaItems(snapshot, context),
+          ));
+          }
+          else{
+            return Center(
+              child: CircularProgressIndicator()
+            );
+          }
+          
         },
-        initialData: [],
       );
   }
 
   
-  List<Widget>_listaItems(List<dynamic>data, BuildContext context) {
+  List<Widget>_listaItems(AsyncSnapshot data, BuildContext context) {
     final List<Widget> opciones=[];
-    data.forEach((opt){
+    // data.forEach((opt)
+    for (String lista in listas){
       final widgetTemp = Dismissible(
-        key: ObjectKey(opt), 
-        child: ListTile(
-          title: Text(opt),
-          leading: Icon(Icons.list),
-          trailing: Icon(Icons.arrow_right),
-          onTap:(){ Navigator.pushNamed(context, "listaitem");}
-        ) 
-        );
-        opciones..add(widgetTemp)
+        key: ObjectKey(lista), 
+        child:  ListTile(
+            title: Text(lista),
+            leading: Icon(Icons.list),
+            trailing: Icon(Icons.arrow_right),
+            onTap:(){ Navigator.pushNamed(context, "listaitem");}
+          
+        )
+      );
+      opciones..add(widgetTemp)
                 ..add(Divider());
-      });
+      };
       return opciones;
+    }
+    Future<Null> refresh()async{
+       setState(() {
+        }); 
+        return null;   
+
     }
 
 
@@ -87,7 +106,7 @@ class _HomepagerState extends State<Homepager> {
             ],
           ),
           actions: <Widget>[
-            FlatButton(onPressed: ()=> listas.add(_nombre), child: Text("OK")),
+            FlatButton(onPressed: ()=>Nuevalista() , child: Text("OK")),
             FlatButton(onPressed: ()=>Navigator.of(context).pop(), child: Text("Cancelar")),
           ],
         );
@@ -178,4 +197,11 @@ class _HomepagerState extends State<Homepager> {
       // },           
     );
   }
+   Nuevalista(){
+     if(_nombre!=""){
+     listas.add(_nombre);
+     _nombre="";
+     Navigator.of(context).pop();
+     }
+   }
 }

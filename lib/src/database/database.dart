@@ -1,12 +1,45 @@
+import "package:sqflite/sqflite.dart";
+import "dart:async";
 
+class Lista{
+  String name;
+  Lista(this.name);
 
+  Map<String, dynamic> toMap(){
+    return{
+      "name":name,
+    };
+  }
 
+  Lista.fromMap(Map<String, dynamic > map) {
+    name: map["name"];
+  }
 
 
+}
 
+class Shoplistdb{
+  Database _db;
 
+  InitDB() async{
+   _db = await openDatabase('sl.db',
+    version: 1,
+    onCreate: (Database db, int version){
+      db.execute("CREATE TABLE shoplists(id INTERGER PRIMARY KEY, name TEXT NOT NULL)");
+    },
+   );
+   print("klk menol");
+  }
+  insert(Lista lista)async{
+    _db.insert("shoplists", lista.toMap());
+  }
 
+  Future<List<Lista>> getAllLists( )async{
+   List<Map<String, dynamic>> results = await _db.query("shoplist");
+   return results.map((map) => Lista.fromMap(map));
+  }
 
+}
 
 
 
@@ -63,8 +96,14 @@
 
 
 
-// import "package:sqflite/sqflite.dart";
-// import "dart:async";
+
+
+
+
+
+
+
+
 // class Lista{
 //   String name;
 //   Lista(this.name);
