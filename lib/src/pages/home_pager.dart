@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:listadecompras/src/database/database.dart';
 import 'package:listadecompras/src/providers/icono_string.dart';
 import 'package:listadecompras/src/providers/menu_provider.dart';
+import "package:flutter_slidable/flutter_slidable.dart";
+
+import 'lista_de_comprass.dart';
 
 
 class Homepager extends StatefulWidget {
@@ -14,20 +17,23 @@ class _HomepagerState extends State<Homepager> {
   String _nombre="";
   List<int> _alert=[200,300];
   List<String>listas=["KLK"];
+   int id=1;
   @override
   Widget build(BuildContext context) {
+    db.InitDB();
     return Scaffold(
       appBar: AppBar(
         title: Text("Lista de compras"),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.search, color: Colors.white,), onPressed: null),// ()=> _search(context),
+          IconButton(icon: Icon(Icons.refresh, color: Colors.white,), onPressed:()=>refresh()),// ()=> _search(context),
           IconButton(icon: Icon(Icons.attach_money, color: Colors.white,), onPressed: ()=> _precio(context),),
           IconButton(icon: Icon(Icons.info, color: Colors.white,), onPressed: ()=> _help(context), )
         ],
       ),
-      body: _Listasdecompras() ,             
+      body: _listaItems(context), 
+                  
       floatingActionButton: FloatingActionButton(
-        onPressed:
+        onPressed: 
           ()=> _crearLista(context),
         child: Icon(Icons.add),
       ),
@@ -40,16 +46,14 @@ class _HomepagerState extends State<Homepager> {
         future:db.InitDB(),
         builder: (BuildContext context, snapshot ){
           if (snapshot.connectionState == ConnectionState.done){
-            return RefreshIndicator(  
+          return RefreshIndicator(  
           onRefresh: refresh,
           child:ListView(
-              children: _listaItems(snapshot, context),
-          ));
+              children: _listaItems(context),
+           ));
           }
           else{
-            return Center(
-              child: CircularProgressIndicator()
-            );
+           return Center(child: Text("data"));
           }
           
         },
@@ -57,25 +61,26 @@ class _HomepagerState extends State<Homepager> {
   }
 
   
-  List<Widget>_listaItems(AsyncSnapshot data, BuildContext context) {
-    final List<Widget> opciones=[];
-    // data.forEach((opt)
-    for (String lista in listas){
-      final widgetTemp = Dismissible(
-        key: ObjectKey(lista), 
-        child:  ListTile(
-            title: Text(lista),
-            leading: Icon(Icons.list),
-            trailing: Icon(Icons.arrow_right),
-            onTap:(){ Navigator.pushNamed(context, "listaitem");}
-          
-        )
-      );
-      opciones..add(widgetTemp)
-                ..add(Divider());
-      };
-      return opciones;
-    }
+  _listaItems( BuildContext context) {
+    return FutureBuilder(
+        future: db.getAllLists(),
+        builder: (context, AsyncSnapshot<List<dynamic>> snapshot){
+      if (snapshot.hasData== true){    
+          return(RefreshIndicator(  
+          onRefresh: refresh,
+          child:
+            ListView(
+              children:_listas(snapshot.data, context)))
+          );
+      }
+
+    else{
+      return Center(
+      child: Text("agrega tarea"),
+    );
+    }  
+  });}
+     
     Future<Null> refresh()async{
        setState(() {
         }); 
@@ -199,9 +204,95 @@ class _HomepagerState extends State<Homepager> {
   }
    Nuevalista(){
      if(_nombre!=""){
-     listas.add(_nombre);
+     Map <String , dynamic  >nuevo= {"name": _nombre} ;
+     db.insert(nuevo);
      _nombre="";
      Navigator.of(context).pop();
+     setState(() {
+        });
      }
    }
+
+  List<Widget> _listas(List<Map> data, BuildContext context) {
+    final List<Widget> items=[];
+    data.forEach((opt) { 
+
+       final widgetTemp =Slidable(
+         actionPane: SlidableBehindActionPane(),
+         secondaryActions: <Widget>[
+            FlatButton(
+              color: Colors.red,
+              onPressed: ()=>Borrar(opt["id"]), 
+              child: Column(
+                children: <Widget>[
+                  Padding(padding: EdgeInsets.all(4.0)),
+                  Icon(Icons.delete),
+                  Text("Borrar" ,
+                        style:TextStyle(
+                        //  backgroundColor: Colors.red
+                        )
+                  )
+                ],
+              )
+            ),
+            FlatButton(
+              color: Colors.green,
+              onPressed: () => _crearLista(context), 
+              child: Column(
+                children: <Widget>[
+                  Padding(padding: EdgeInsets.all(4.0)),
+                  Icon(Icons.edit),
+                  Text("Editar" ,
+                        style:TextStyle(
+                        //  backgroundColor: Colors.red
+                        )
+                  )
+                ],
+              )
+            )
+          ],
+         child :ListTile(
+           title: Text( opt["name"]),
+           leading: Icon(Icons.list),
+          //  leading: Text( opt["id"].toString()),
+          //  leading: Text("$id"),
+           trailing: Icon(Icons.arrow_right),
+           onTap:(){
+             var route =new MaterialPageRoute(
+              builder: (BuildContext context)=>new ListaDeArticulos(idl: opt["id"],nombrel:opt["name"])
+             );
+               Navigator.of(context).push(route);
+          }
+        ));
+
+       items..add(widgetTemp)
+              ..add(Divider()); 
+    });
+     return items;
+  }
+
+  void Borrar(int id ) {
+    db.deletelist(id);
+    refresh();
+  }
+  
 }
+
+
+  // final List<Widget> opciones=[];
+    // // data.forEach((opt)
+    // for (String lista in listas){
+    //   final widgetTemp = Dismissible(
+    //     key: ObjectKey(lista), 
+    //     child:  ListTile(
+    //         title: Text(lista),
+    //         leading: Icon(Icons.list),
+    //         trailing: Icon(Icons.arrow_right),
+    //         onTap:(){ Navigator.pushNamed(context, "listaitem");}
+          
+    //     )
+    //   );
+    //   opciones..add(widgetTemp)
+    //             ..add(Divider());
+    //   };
+    //   return opciones;
