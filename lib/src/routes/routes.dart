@@ -7,7 +7,7 @@ Map<String,WidgetBuilder > getAplicationRoutes(){
 
   return <String,WidgetBuilder>{
          '/':(BuildContext  context )=> Homepager(),
-        "listaitem":(BuildContext  context )=> ListaDeArticulos(),
+        "listaitem":(BuildContext  context)=> ListaDeArticulos(),
         
         
       };
