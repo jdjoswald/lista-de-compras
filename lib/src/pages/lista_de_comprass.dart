@@ -4,6 +4,7 @@ import 'package:listadecompras/src/database/database.dart';
 import 'package:listadecompras/src/providers/ltem_provider.dart';
 import "package:flutter_slidable/flutter_slidable.dart";
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -19,10 +20,8 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
   bool comprado= false;
   List<String> _poderes=["Dolar","Peso"];
   String _opcionSeleccionada= "Peso";
-  // String listName=( widget.nombrel);
   int sun =0;
   int k=0;
-
   int dolar=1;
   String nombrer="";
   String urlr="";
@@ -32,46 +31,30 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
     db.InitDB();
     return Scaffold(
       appBar: AppBar(
-                leading:Column(
-                  children: 
-                  <Widget>[
-                    Padding(padding: EdgeInsets.all(5.0)),
-                    Text("Total"),
-                    Text(Suma()),
+          leading:Column(
+            children: 
+            <Widget>[
+              Padding(padding: EdgeInsets.all(5.0)),
+              Text("Total"),
+              Text(Suma()),
 
-                  ]
-                ),
-                title: Text("lista ${ widget.nombrel}"),
-                actions: <Widget>[
-                  IconButton(icon: Icon(Icons.search, color: Colors.white,), onPressed:()=> refresh()),
-                  IconButton(icon: Icon(Icons.attach_money, color: Colors.white,), onPressed: ()=> _precio(context),),
-                  IconButton(icon: Icon(Icons.info, color: Colors.white,), onPressed: ()=> _help(context),)
-                ],
-        
-              ),
-              body: _listaItems(context),  
-              floatingActionButton: FloatingActionButton(
-                onPressed: ()=> _crearitem(context,"","",0,""),
-                child: Icon(Icons.add),
-              ),  
-            );
-          }
-        
-        
-  // Widget _lista() {
-  //   return FutureBuilder(
-  //     future:itemProvider.cargardata() ,
-  //     builder: (context,AsyncSnapshot<List<dynamic>> snapshot ){
-  //       return RefreshIndicator(  
-  //         onRefresh: refresh,
-  //         child:ListView(
-  //             children: _listaItems(snapshot.data, context),
-  //       ));
-  //     },
-  //     initialData: [],
-  //   );
-  // }
+            ]
+          ),
+          title: Text("lista ${ widget.nombrel}"),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.search, color: Colors.white,), onPressed:()=> refresh()),
+            IconButton(icon: Icon(Icons.attach_money, color: Colors.white,), onPressed: ()=> _precio(context),),
+            IconButton(icon: Icon(Icons.info, color: Colors.white,), onPressed: ()=> _help(context),)
+          ],
 
+        ),
+        body: _listaItems(context),  
+        floatingActionButton: FloatingActionButton(
+          onPressed: ()=> _crearitem(context,"","",0,""),
+          child: Icon(Icons.add),
+        ),  
+     );
+  }
 
   List<Widget> _listas(List<Map> data, BuildContext context) {
     final List<Widget> items=[];
@@ -79,6 +62,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
        {sun=sun+opt["precio"];}
        final widgetTemp =Slidable(
          actionPane: SlidableBehindActionPane(),
+         
          secondaryActions: <Widget>[
             FlatButton(
               color: Colors.red,
@@ -97,14 +81,13 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
             ),
             FlatButton(
               color: Colors.green,
-              onPressed: () => {}, 
+              onPressed: () => edit(context, opt["id"], opt["name"], opt["link"], opt["precio"], opt["divisa"]),
               child: Column(
                 children: <Widget>[
                   Padding(padding: EdgeInsets.all(4.0)),
                   Icon(Icons.edit),
                   Text("Editar" ,
                         style:TextStyle(
-                        //  backgroundColor: Colors.red
                         )
                   )
                 ],
@@ -112,7 +95,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
             )
           ],
          child :ListTile(
-           onTap: ()=>_veritem(context, opt['name'], opt['link'], opt['precio'].toString(), opt['divisa'] ,opt["estado"]),
+           onTap: ()=>_veritem(context,opt["id"], opt['name'], opt['link'], opt['precio'].toString(), opt['divisa'] ,opt["estado"]),
            title: Row (
               children: <Widget>[
                 Text(opt['name']),
@@ -124,20 +107,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
                 ),
                 Text(opt['precio'].toString())
               ],
-            ),
-          //   value:opt["estado"],
-          //   secondary: Column(
-          //     children: <Widget>[
-          //       IconButton(onPressed:()=> _veritem(context,opt['name'], opt["link"],opt["precio"], opt["divisa"]),icon: Icon(Icons.remove_red_eye)),
-          //     ] 
-          //   ),
-          //  onChanged: (valor){
-          //     setState(() {
-          //     comprado=valor;
-          //     });  
-          //   }, 
-             
-          
+            ), 
         )
       );
 
@@ -159,19 +129,15 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
               children:_listas(snapshot.data, context)))
           );
       }
-
     else{
-      return Center(
-      child: Text("agrega tarea"),
+     return Center(
+      child: FlatButton(onPressed: ()=>refresh(), child: Text("refresh"))
     );
     }  
   });}
 
-    
-
-
   _crearitem(BuildContext context, String nombre,String url,int costo, String divisa) {
-    print("$nombre $url ");
+    if (divisa!=""){_opcionSeleccionada=divisa;}
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -179,18 +145,18 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
         return AlertDialog(
           title: Text("Crear item"),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
-          content:Column(
-            mainAxisSize: MainAxisSize.min, 
-            children: <Widget>[
-              Container(
-                width:2000000.0,
-                height:2.0,
-                decoration: BoxDecoration(
-                  color: Colors.white
+          content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  width:2000000.0,
+                  height:2.0,
+                  decoration: BoxDecoration(
+                    color: Colors.white
+                  ),
                 ),
-              ),
-              _crearinput(nombre,url,costo,divisa),
-            ],
+                _crearinput(nombre,url,costo,divisa),
+              ],
           ),
           actions: <Widget>[
             FlatButton(onPressed: ()=> Nuevoitem(), child: Text("OK")),
@@ -201,82 +167,88 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
     );
   }
 
-
   Widget _crearinput( String nombre,String url,int costo, String divisa) {
     if (divisa==_poderes[0]){
       _opcionSeleccionada=_poderes[0];
     }
-    return Column(
-      children: <Widget>[
-        TextField(
-          decoration: InputDecoration(
-            labelText: "Nombre",
-            helperText: "Escribe el nombre del producto que quieres crear",
-            suffixIcon: Icon(Icons.list,color: Colors.blue,),
-            border:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0)
-            )
-          ),
-          onChanged: (valor){
-            setState(() {
-              nombrer=valor;
-        });               
-      }, 
-        ),
-        Divider(),
-        TextField(
-          keyboardType: TextInputType.url,
-          decoration: InputDecoration(
-            labelText: "url",
-            helperText: "Escribe el Link del lugar donde compraras el Articulo",
-            suffixIcon: Icon(Icons.place, color: Colors.blue,),
-            border:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0)
-            )
-          ),
-          onChanged: (valor2){
-            setState(() {
-              urlr=valor2;
-        });               
-      }, 
-        ),
-        Divider(),
-        TextField(
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: "Costo",
-            helperText: "cuanto cuesta el articulo",
-            suffixIcon: Icon(Icons.attach_money, color: Colors.blue,),
-            border:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0)
-            )
-          ),
-          onChanged: (valor3){
-            setState(() {
-          costor=valor3;
-        });               
-      }, 
-
-        ),
-        Divider(),
-        DropdownButtonFormField(
-            value: _opcionSeleccionada,
-            items: getOpcionnesDropdwn(),  
-            onChanged: (opt){
-            setState(() {
-              _opcionSeleccionada=opt;
-              });
-            },
+     final cname = TextEditingController()..text=nombre;
+     final cprecio = TextEditingController()..text=costo.toString();
+     final curl = TextEditingController()..text=url;
+    //  cname.text=nombre;
+    return  Column(
+        children: <Widget>[
+          TextField(
+            controller: cname,
             decoration: InputDecoration(
-            labelText: "Divisa",
-            helperText: "En que divisa esta el articulo recuerda cambiar el valor de divisas",
-            suffixIcon: Icon(Icons.attach_money,color: Colors.blue,),
-            border:OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20.0)
-            )
-            ), 
-        ),
-      ],
+              labelText: "Nombre",
+              helperText: "Escribe el nombre del producto que quieres crear",
+              suffixIcon: Icon(Icons.list,color: Colors.blue,),
+              border:OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0)
+              )
+            ),
+            onChanged: (valor){
+              setState(() {
+                nombrer=valor;
+          });               
+        }, 
+          ),
+          Divider(),
+          TextField(
+            controller: curl,
+            keyboardType: TextInputType.url,
+            decoration: InputDecoration(
+              labelText: "url",
+              helperText: "Escribe el Link del lugar donde compraras el Articulo",
+              suffixIcon: Icon(Icons.place, color: Colors.blue,),
+              border:OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0)
+              )
+            ),
+            onChanged: (valor2){
+              setState(() {
+                urlr=valor2;
+          });               
+        }, 
+          ),
+          Divider(),
+          TextField(
+            controller: cprecio,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: "Costo",
+              helperText: "cuanto cuesta el articulo",
+              suffixIcon: Icon(Icons.attach_money, color: Colors.blue,),
+              border:OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0)
+              )
+            ),
+            onChanged: (valor3){
+              setState(() {
+                costor=valor3;
+              });               
+            }, 
+          ),
+          Divider(),
+          DropdownButtonFormField(
+              value: _opcionSeleccionada,
+              items: getOpcionnesDropdwn(),  
+              onChanged: (opt){
+              setState(() {
+                _opcionSeleccionada=opt;
+                });
+              },
+              decoration: InputDecoration(
+              labelText: "Divisa",
+              helperText: "En que divisa esta el articulo recuerda cambiar el valor de divisas",
+              suffixIcon: Icon(Icons.attach_money,color: Colors.blue,),
+              border:OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0)
+              )
+              ), 
+          ),
+        ],
+      
     );  
   }
   List<DropdownMenuItem<String>> getOpcionnesDropdwn(){
@@ -291,7 +263,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
   }
 
 
-  _veritem(BuildContext context, String nombre,String url,String costo, String divisa ,int estado) {
+  _veritem( BuildContext context,int id, String nombre,String url,String costo, String divisa ,int estado) {
     String estador;
     if(divisa=="Dolar"){divisa="Dolares";}
     else{divisa="Pesos";}
@@ -316,7 +288,8 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
           actions: <Widget>[
             FlatButton(onPressed: ()=>Navigator.of(context).pop(), child: Text("OK")),
             FlatButton(onPressed: (){Clipboard.setData(ClipboardData(text: url));}, child: Text("copiar url")),
-            FlatButton(onPressed: null, child: Text("ir a tienda")),
+            FlatButton(onPressed: ()=> _launchURL(url), child: Text("ir a tienda")),
+            FlatButton(onPressed: ()=> editstatus(id, estado), child: Text("Comprado")),
           ],
         );
       }
@@ -378,12 +351,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20.0)
         ),
-      ),
-              // onChanged: (valor){
-              //   setState(() {
-              //     _nombre=valor;
-              //   });               
-              // },           
+      ),           
    );
   }
         
@@ -395,7 +363,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
                                      "precio":rcost,
                                       "link": urlr,
                                       "divisa":_opcionSeleccionada,
-                                      "estado": 0
+                                      "estado": 1
                                       };
       db.insert2(nuevo);
     nombrer="";
@@ -428,6 +396,65 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
         return null;   
 
     }
+  _launchURL(String url) async {
+  
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+  edit(BuildContext context, int id,String nombre,String url,int costo, String divisa) {
+    print("$nombre $url ");
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context){
+        return AlertDialog(
+          title: Text("Editar item $nombre"),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  width:2000000.0,
+                  height:2.0,
+                  decoration: BoxDecoration(
+                    color: Colors.white
+                  ),
+                ),
+                _crearinput(nombre,url,costo,divisa),
+              ],
+          ),
+          actions: <Widget>[
+            FlatButton(onPressed: ()=> edittodb(id,nombre,costo,url), child: Text("editar")),
+            FlatButton(onPressed: ()=>Navigator.of(context).pop(), child: Text("Cancelar")),
+          ],
+        );
+      }
+    );
+  }
+  edittodb(int id ,String nombre, int costo ,String url){
+    int rcost;
+    if( costor!=""  ){
+      rcost= int.parse(costor);}
+    else{
+      rcost=costo;
+    }
+      db.updateitems(id, nombrer, _opcionSeleccionada, urlr, rcost);
+    nombrer="";
+    costor="";
+    urlr="";
+    k=0;
+    sun=0;
+    Navigator.of(context).pop();
+    setState(() {
+        });
+  }
+  editstatus(int id, int estado){
+    db.comprado(id, estado);
+    Navigator.of(context).pop();
+  }
 }
 
 
