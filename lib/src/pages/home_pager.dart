@@ -76,7 +76,7 @@ class _HomepagerState extends State<Homepager> {
 
     else{
       return Center(
-      child: Text("agrega tarea"),
+      child: FlatButton(onPressed: ()=>refresh(), child: Text("refresh"))
     );
     }  
   });}
@@ -107,7 +107,7 @@ class _HomepagerState extends State<Homepager> {
                   color: Colors.white
                 ),
               ),
-              _crearinput(),
+              _crearinput(""),
             ],
           ),
           actions: <Widget>[
@@ -120,8 +120,10 @@ class _HomepagerState extends State<Homepager> {
   }
 
 
-  Widget _crearinput() {
+  Widget _crearinput(String nombre) {
+    final cname = TextEditingController()..text=nombre;
     return TextField(
+      controller: cname,
       decoration: InputDecoration(
         labelText: "Nombre",
         helperText: "escribe el nombre de la nueva lista",
@@ -237,7 +239,7 @@ class _HomepagerState extends State<Homepager> {
             ),
             FlatButton(
               color: Colors.green,
-              onPressed: () => _crearLista(context), 
+              onPressed: () => _editlist(context, opt["name"], opt["id"]), 
               child: Column(
                 children: <Widget>[
                   Padding(padding: EdgeInsets.all(4.0)),
@@ -275,6 +277,45 @@ class _HomepagerState extends State<Homepager> {
     db.deletelist(id);
     refresh();
   }
+  
+  void _editlist(BuildContext context, String nombre, int id) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context){
+        return AlertDialog(
+          title: Text("editar lista $nombre"),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          content:Column(
+            mainAxisSize: MainAxisSize.min, 
+            children: <Widget>[
+              Container(
+                width:2000000.0,
+                height:2.0,
+                decoration: BoxDecoration(
+                  color: Colors.white
+                ),
+              ),
+              _crearinput(nombre),
+            ],
+          ),
+          actions: <Widget>[
+            FlatButton(onPressed: ()=>edittodb(id) , child: Text("OK")),
+            FlatButton(onPressed: ()=>Navigator.of(context).pop(), child: Text("Cancelar")),
+          ],
+        );
+      }
+    );
+  }
+   edittodb(int id){
+    if(_nombre!="" ){
+      db.updatelist(id, _nombre );
+
+    Navigator.of(context).pop();
+    setState(() {
+        });
+    }
+   }
   
 }
 

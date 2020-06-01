@@ -1,25 +1,6 @@
 import "package:sqflite/sqflite.dart";
 import "dart:async";
 
-// class Lista{
-//   int id;
-//   String name;
-//   Lista(this.name);
-
-//   Map<String, dynamic> toMap(){
-//     return{
-//       "name":name,
-//     };
-//   }
-
-//   Lista.fromMap(Map<String, dynamic > map) {
-//     id: map["id"];
-//     name: map["name"];
-//   }
-
-
-// }
-
 class Shoplistdb{
   Database _db;
 
@@ -31,6 +12,8 @@ class Shoplistdb{
       db.execute("CREATE TABLE shoplists(id INTEGER PRIMARY KEY AUTOINCREMENT , name TEXT NOT NULL)");
       db.execute("CREATE TABLE items(id INTEGER PRIMARY KEY AUTOINCREMENT,idl INT, name TEXT NOT NULL,precio INT,link TEXT,divisa TEXT, estado INT)");
       db.execute("CREATE TABLE dolar(id INTEGER PRIMARY KEY AUTOINCREMENT, precio INT )");
+      db.execute("CREATE TABLE estado(id INTEGER PRIMARY KEY AUTOINCREMENT, estado TEXT )");
+      
     },
    );
    
@@ -53,22 +36,45 @@ class Shoplistdb{
     _db.rawQuery("DELETE FROM items WHERE idl=$lista");
     _db.rawQuery("DELETE FROM shoplists WHERE id=$lista");
   }
+  comprado(int id, int estado)async{
+    print(estado);
+    print(id);
+    if(estado==0){
+      _db.rawQuery("UPDATE items SET estado = 1 WHERE id=$id"); 
+   }else{
+      _db.rawQuery("UPDATE items SET estado = 0 WHERE id=$id"); 
+
+   }
+  }
   
   sum( int item)async{
     InitDB();
-    _db.rawQuery("select sum(precio) FROM items WHERE id=$item");
+     _db.rawQuery("select sum(precio) FROM items WHERE id=$item"); 
   }
 
-  updateitems( int id, String nombre, String divisa, String url, String costo)async{
+  updateitems( int id, String nombre, String divisa, String url, int costo)async{
     InitDB();
-    _db.rawQuery("UPDATE items SET dolar WHERE id=$id");
+    if(nombre!=""){
+      _db.rawQuery("UPDATE items SET name = '$nombre' WHERE id=$id");
+      print("editado a $nombre");}
+    if(url!=""){
+      _db.rawQuery("UPDATE items SET link = '$url' WHERE id=$id");
+      print("editado a $url");}
+    if(costo!=0){
+      _db.rawQuery("UPDATE items SET precio = '$costo' WHERE id=$id");
+      print("editado a $costo");}
+    if(divisa!=""){
+      _db.rawQuery("UPDATE items SET divisa = '$divisa' WHERE id=$id");
+      print("editado a $divisa");}
   }
-  updatelist( int list)async{
+  updatelist( int id ,String name)async{
     InitDB();
-    _db.rawQuery("UPDATE shoplists SET dolar WHERE id=1");
+    _db.rawQuery("UPDATE shoplists SET name= '$name'  WHERE id=$id");
   }
 
-  
+  updatedolar(int id)async{
+
+  }
 
   Future<List<dynamic>> getAllLists( )async{
     InitDB();
@@ -80,6 +86,7 @@ class Shoplistdb{
   Future<List<dynamic>> getitems(int id )async{
     InitDB();
     List<dynamic>item=[];
+    sum(id);
    List<Map<String, dynamic>> results = await _db.rawQuery("SELECT * FROM items WHERE idl=$id");
     item= results;
     return item;
