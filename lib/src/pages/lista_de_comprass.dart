@@ -36,7 +36,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
             <Widget>[
               Padding(padding: EdgeInsets.all(5.0)),
               Text("Total"),
-              Text(Suma()),
+              Text("nop"),
 
             ]
           ),
@@ -56,12 +56,48 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
      );
   }
 
+  _listaItems( BuildContext context) {
+    return FutureBuilder(
+        future: db.getitems(widget.idl),
+        builder: (context, AsyncSnapshot<List<dynamic>> snapshot){
+      if (snapshot.hasData== true){    
+          return(RefreshIndicator(  
+          onRefresh: refresh,
+          child:
+            ListView(
+              children:_listas(snapshot.data, context)))
+          );
+      }
+    else{
+     return Center(
+      child: FlatButton(onPressed: ()=>refresh(), child: Text("refresh"))
+    );
+    }  
+  });}
+
   List<Widget> _listas(List<Map> data, BuildContext context) {
     final List<Widget> items=[];
     data.forEach((opt) { 
        {sun=sun+opt["precio"];}
        final widgetTemp =Slidable(
          actionPane: SlidableBehindActionPane(),
+         actions: <Widget>[
+          FlatButton(
+              color: Colors.blue,
+              onPressed: ()=>_veritem(context,opt["id"], opt['name'], opt['link'], opt['precio'].toString(), opt['divisa'] ,opt["estado"]),
+              child: Column(
+                children: <Widget>[
+                  Padding(padding: EdgeInsets.all(4.0)),
+                  Icon(Icons.remove_red_eye),
+                  Text("Detalles" ,
+                        style:TextStyle(
+                        //  backgroundColor: Colors.red
+                        )
+                  )
+                ],
+              )
+            ),
+         ],
          
          secondaryActions: <Widget>[
             FlatButton(
@@ -94,8 +130,14 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
               )
             )
           ],
-         child :ListTile(
-           onTap: ()=>_veritem(context,opt["id"], opt['name'], opt['link'], opt['precio'].toString(), opt['divisa'] ,opt["estado"]),
+         child :CheckboxListTile(
+           value: inttobool(opt["estado"]),
+           onChanged: (valor){
+              setState(() {
+              db.comprado(opt["id"], opt["estado"]);
+              });  
+            }, 
+           
            title: Row (
               children: <Widget>[
                 Text(opt['name']),
@@ -117,24 +159,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
      return items;
   }
 
-  _listaItems( BuildContext context) {
-    return FutureBuilder(
-        future: db.getitems(widget.idl),
-        builder: (context, AsyncSnapshot<List<dynamic>> snapshot){
-      if (snapshot.hasData== true){    
-          return(RefreshIndicator(  
-          onRefresh: refresh,
-          child:
-            ListView(
-              children:_listas(snapshot.data, context)))
-          );
-      }
-    else{
-     return Center(
-      child: FlatButton(onPressed: ()=>refresh(), child: Text("refresh"))
-    );
-    }  
-  });}
+  
 
   _crearitem(BuildContext context, String nombre,String url,int costo, String divisa) {
     if (divisa!=""){_opcionSeleccionada=divisa;}
@@ -262,6 +287,31 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
     return lista;
   }
 
+   Nuevoitem(){
+    if(nombrer!="" && costor!="" && urlr!="" ){
+      int rcost= int.parse(costor);
+      Map <String , dynamic  >nuevo= {"idl": widget.idl,           
+                                     "name": nombrer,
+                                     "precio":rcost,
+                                      "link": urlr,
+                                      "divisa":_opcionSeleccionada,
+                                      "estado": 0
+                                      };
+      db.insert2(nuevo);
+    nombrer="";
+    costor="";
+    urlr="";
+    k=0;
+    sun=0;
+    Navigator.of(context).pop();
+    setState(() {
+        });
+    }
+    
+  }
+
+
+
 
   _veritem( BuildContext context,int id, String nombre,String url,String costo, String divisa ,int estado) {
     String estador;
@@ -289,7 +339,6 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
             FlatButton(onPressed: ()=>Navigator.of(context).pop(), child: Text("OK")),
             FlatButton(onPressed: (){Clipboard.setData(ClipboardData(text: url));}, child: Text("copiar url")),
             FlatButton(onPressed: ()=> _launchURL(url), child: Text("ir a tienda")),
-            FlatButton(onPressed: ()=> editstatus(id, estado), child: Text("Comprado")),
           ],
         );
       }
@@ -320,7 +369,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
     );
   }
 
-  _precio(BuildContext context) {
+ _precio(BuildContext context) {
     showDialog( 
       context: context,
       barrierDismissible: true,
@@ -330,19 +379,19 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
           content: Column(
             mainAxisSize: MainAxisSize.min, 
             children: <Widget>[  
-              _crearinput2(),
+             _crearinput2(),
             ],
           ),
-            actions: <Widget>[
-            FlatButton(onPressed: ()=>Navigator.of(context).pop(), child: Text("OK")),
+           actions: <Widget>[
+            FlatButton(onPressed: ()=>cambio(), child: Text("OK")),
           ],
         );
       }
     );
   }
-        
-  Widget _crearinput2() {
-   return TextField(
+
+     Widget _crearinput2() {
+    return TextField(
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: "precio actual del dolar",
@@ -351,37 +400,21 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20.0)
         ),
-      ),           
-   );
+      ),
+      onChanged: (valor){
+        setState(() {
+          dolar= int.parse(valor);
+        });               
+      },           
+    );
   }
-        
-  Nuevoitem(){
-    if(nombrer!="" && costor!="" && urlr!="" ){
-      int rcost= int.parse(costor);
-      Map <String , dynamic  >nuevo= {"idl": widget.idl,           
-                                     "name": nombrer,
-                                     "precio":rcost,
-                                      "link": urlr,
-                                      "divisa":_opcionSeleccionada,
-                                      "estado": 1
-                                      };
-      db.insert2(nuevo);
-    nombrer="";
-    costor="";
-    urlr="";
-    k=0;
-    sun=0;
+
+  cambio(){
+    db.updatedolar(dolar);
     Navigator.of(context).pop();
-    setState(() {
-        });
-    }
-    
+
   }
-        
-  String Suma() {
-    return sun.toString();
-  }
-  
+
 
   void Borrar(int id) {
     // print ("$id");
@@ -389,13 +422,16 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
     refresh();
 
   }
+
+
   Future<Null> refresh()async{
        setState(() {
          sun=0;
         }); 
         return null;   
-
     }
+
+
   _launchURL(String url) async {
   
     if (await canLaunch(url)) {
@@ -404,6 +440,8 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
       throw 'Could not launch $url';
     }
   }
+
+
   edit(BuildContext context, int id,String nombre,String url,int costo, String divisa) {
     print("$nombre $url ");
     showDialog(
@@ -434,6 +472,8 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
       }
     );
   }
+
+
   edittodb(int id ,String nombre, int costo ,String url){
     int rcost;
     if( costor!=""  ){
@@ -451,93 +491,23 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
     setState(() {
         });
   }
+
+
   editstatus(int id, int estado){
     db.comprado(id, estado);
     Navigator.of(context).pop();
+  }
+
+   bool inttobool(opt) {
+     if(opt==0){
+       return false;
+     }
+     else{
+       return true;
+     }
+
   }
 }
 
 
 
-// List<Widget>_listItems(List<dynamic>data, BuildContext context) {
-//       final List<Widget> items=[];
-//       data.forEach((opt){
-//       int precio=opt['precio'];
-//       if (k<data.length){
-//         if(opt["divisa"]=="Dolar" && opt["estado"]==false){
-//           sun= sun + (precio*dolar).toInt();
-
-//         }else if (opt["estado"]==false){
-//           sun = sun + precio;}
-//             k=k+1;}
-//         final widgetTemp =Slidable(
-//           actionPane: SlidableBehindActionPane(),
-//           secondaryActions: <Widget>[
-//             FlatButton(
-//               color: Colors.red,
-//               onPressed: Borrar, 
-//               child: Column(
-//                 children: <Widget>[
-//                   Padding(padding: EdgeInsets.all(4.0)),
-//                   Icon(Icons.delete),
-//                   Text("Borrar" ,
-//                         style:TextStyle(
-//                         //  backgroundColor: Colors.red
-//                         )
-//                   )
-//                 ],
-//               )
-//             ),
-//             FlatButton(
-//               color: Colors.green,
-//               onPressed: () => _crearitem(context, opt["name"],  opt["link"],  opt["precio"],  opt["divisa"]), 
-//               child: Column(
-//                 children: <Widget>[
-//                   Padding(padding: EdgeInsets.all(4.0)),
-//                   Icon(Icons.edit),
-//                   Text("Editar" ,
-//                         style:TextStyle(
-//                         //  backgroundColor: Colors.red
-//                         )
-//                   )
-//                 ],
-//               )
-//             )
-          
-            
-            
-            
-//           ],
-//           child:  CheckboxListTile( 
-//             title: Row (
-//               children: <Widget>[
-//                 Text(opt['articulo']),
-//                 Expanded(
-//                   flex: 2,
-//                   child: Container(
-//                     height: 1,
-//                   ),
-//                 ),
-//                 Text(" $precio ")
-//               ],
-//             ),
-//             value:opt["estado"],
-//             secondary: Column(
-//               children: <Widget>[
-//                 IconButton(onPressed:()=> _veritem(context,opt['articulo'], opt["link"],precio, opt["divisa"]),icon: Icon(Icons.remove_red_eye)),
-//               ] 
-//             ),
-//             onChanged: (valor){
-//               setState(() {
-//               comprado=valor;
-//               });  
-//             }, 
-//         ), 
-//         ) ;
-        
-        
-//         items..add(widgetTemp)
-//               ..add(Divider());  
-//       });
-//       return items;
-//     }

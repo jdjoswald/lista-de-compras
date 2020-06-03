@@ -1,4 +1,4 @@
-#Mon Jun 01 12:32:11 VET 2020
+#Tue Jun 02 21:04:04 VET 2020
 base.0=C\:\\Users\\Usuario\\Documents\\flutter\\lista-de-compras\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
 path.0=classes.dex
 renamed.0=classes.dex
