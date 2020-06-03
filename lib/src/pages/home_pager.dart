@@ -3,6 +3,7 @@ import 'package:listadecompras/src/database/database.dart';
 import 'package:listadecompras/src/providers/icono_string.dart';
 import 'package:listadecompras/src/providers/menu_provider.dart';
 import "package:flutter_slidable/flutter_slidable.dart";
+import 'dart:convert';
 
 import 'lista_de_comprass.dart';
 
@@ -17,7 +18,8 @@ class _HomepagerState extends State<Homepager> {
   String _nombre="";
   List<int> _alert=[200,300];
   List<String>listas=["KLK"];
-   int id=1;
+  int dolar=1;
+  int id=1;
   @override
   Widget build(BuildContext context) {
     db.InitDB();
@@ -179,16 +181,22 @@ class _HomepagerState extends State<Homepager> {
             ],
           ),
            actions: <Widget>[
-            FlatButton(onPressed: ()=>Navigator.of(context).pop(), child: Text("OK")),
+            FlatButton(onPressed: ()=>cambio(), child: Text("OK")),
           ],
         );
       }
     );
   }
+  cambio(){
+    db.updatedolar(dolar);
+    Navigator.of(context).pop();
+
+  }
 
 
   Widget _crearinput2() {
     return TextField(
+      keyboardType: TextInputType.number,
       decoration: InputDecoration(
         labelText: "precio actual del dolar",
         helperText: "ingrese el precio actual del dolar",
@@ -197,11 +205,11 @@ class _HomepagerState extends State<Homepager> {
           borderRadius: BorderRadius.circular(20.0)
         ),
       ),
-      // onChanged: (valor){
-      //   setState(() {
-      //     _nombre=valor;
-      //   });               
-      // },           
+      onChanged: (valor){
+        setState(() {
+          dolar= int.parse(valor);
+        });               
+      },           
     );
   }
    Nuevalista(){
