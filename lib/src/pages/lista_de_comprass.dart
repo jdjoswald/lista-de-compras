@@ -22,10 +22,12 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
   String _opcionSeleccionada= "Peso";
   int sun =0;
   int k=0;
+  int paso=0;
   int dolar=1;
   String nombrer="";
   String urlr="";
   String costor="";
+  String suma="";
   @override
   Widget build(BuildContext context) {
     db.InitDB();
@@ -36,7 +38,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
             <Widget>[
               Padding(padding: EdgeInsets.all(5.0)),
               Text("Total"),
-              Text("nop"),
+              Text(sun.toString()),
 
             ]
           ),
@@ -56,11 +58,19 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
      );
   }
 
+ 
   _listaItems( BuildContext context) {
     return FutureBuilder(
         future: db.getitems(widget.idl),
         builder: (context, AsyncSnapshot<List<dynamic>> snapshot){
-      if (snapshot.hasData== true){    
+      if (snapshot.hasData== true){ 
+          if(paso==0){
+            snapshot.data.forEach((element) { 
+              if( element["estado"]==0){sun=sun + element["precio"];}
+            paso=1;});
+            print(sun);
+          } 
+            
           return(RefreshIndicator(  
           onRefresh: refresh,
           child:
@@ -78,22 +88,28 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
   List<Widget> _listas(List<Map> data, BuildContext context) {
     final List<Widget> items=[];
     data.forEach((opt) { 
-       {sun=sun+opt["precio"];}
        final widgetTemp =Slidable(
          actionPane: SlidableBehindActionPane(),
          actions: <Widget>[
-          FlatButton(
+            FlatButton(
               color: Colors.blue,
               onPressed: ()=>_veritem(context,opt["id"], opt['name'], opt['link'], opt['precio'].toString(), opt['divisa'] ,opt["estado"]),
               child: Column(
                 children: <Widget>[
                   Padding(padding: EdgeInsets.all(4.0)),
                   Icon(Icons.remove_red_eye),
-                  Text("Detalles" ,
-                        style:TextStyle(
-                        //  backgroundColor: Colors.red
-                        )
-                  )
+                  Text("Detalles")
+                ],
+              )
+            ),
+            FlatButton(
+              color: Colors.yellow,
+              onPressed: ()=>_launchURL(opt["link"]),
+              child: Column(
+                children: <Widget>[
+                  Padding(padding: EdgeInsets.all(4.0)),
+                  Icon(Icons.shopping_basket),
+                  Text("ir a tienda")
                 ],
               )
             ),
@@ -107,11 +123,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
                 children: <Widget>[
                   Padding(padding: EdgeInsets.all(4.0)),
                   Icon(Icons.delete),
-                  Text("Borrar" ,
-                        style:TextStyle(
-                        //  backgroundColor: Colors.red
-                        )
-                  )
+                  Text("Borrar")
                 ],
               )
             ),
@@ -122,10 +134,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
                 children: <Widget>[
                   Padding(padding: EdgeInsets.all(4.0)),
                   Icon(Icons.edit),
-                  Text("Editar" ,
-                        style:TextStyle(
-                        )
-                  )
+                  Text("Editar")
                 ],
               )
             )
@@ -133,11 +142,13 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
          child :CheckboxListTile(
            value: inttobool(opt["estado"]),
            onChanged: (valor){
-              setState(() {
+              setState(() {                
               db.comprado(opt["id"], opt["estado"]);
+              paso=0;
+              sun=0;
+
               });  
-            }, 
-           
+            },           
            title: Row (
               children: <Widget>[
                 Text(opt['name']),
@@ -149,13 +160,12 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
                 ),
                 Text(opt['precio'].toString())
               ],
-            ), 
+           ), 
         )
       );
-
        items..add(widgetTemp)
-              ..add(Divider()); 
-    });
+              ..add(Divider());
+    });   
      return items;
   }
 
@@ -426,7 +436,7 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
 
   Future<Null> refresh()async{
        setState(() {
-         sun=0;
+        
         }); 
         return null;   
     }
@@ -507,6 +517,17 @@ class _ListaDeArticulosState extends State<ListaDeArticulos> {
      }
 
   }
+
+  // String sumitem(BuildContext context, List data) {
+  //   String items;
+  //   data.forEach((opt) { 
+  //      items=opt["sum(precio)"].toString();
+  //   });
+  //   print (items);
+  //    return items; 
+  // }
+
+  
 }
 
 

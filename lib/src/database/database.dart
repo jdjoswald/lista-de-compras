@@ -53,13 +53,7 @@ class Shoplistdb{
   }
 
   
-  Future<List<dynamic>> sum( int item)async{
-    InitDB();
-    List<dynamic>suma=[];
-    List<Map<String, dynamic>> results = await _db.rawQuery("select sum(precio) FROM items WHERE id=$item"); 
-    suma= results;
-    return suma;
-  }
+  
 
 
   updateitems( int id, String nombre, String divisa, String url, int costo)async{
