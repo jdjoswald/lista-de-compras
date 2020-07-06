@@ -2,45 +2,48 @@ import "package:sqflite/sqflite.dart";
 import "dart:async";
 
 class Shoplistdb{
+   var klk=Duration(seconds: 1);
   Database _db;
 
   InitDB() async{
    _db = await openDatabase('sl9.db',
     version: 1,
     onCreate: (Database db, int version){
-      print("klkmenol");
       db.execute("CREATE TABLE shoplists(id INTEGER PRIMARY KEY AUTOINCREMENT , name TEXT NOT NULL)");
       db.execute("CREATE TABLE items(id INTEGER PRIMARY KEY AUTOINCREMENT,idl INT, name TEXT NOT NULL,precio INT,link TEXT,divisa TEXT, estado INT)");
       db.execute("CREATE TABLE dolar(id INTEGER PRIMARY KEY AUTOINCREMENT, precio INT )");
-      db.rawQuery("INSERT INTO dolar(precio) VALUES(1)");
+      // db.rawQuery("INSERT INTO dolar(precio) VALUES(1)");
       db.execute("CREATE TABLE estado(id INTEGER PRIMARY KEY AUTOINCREMENT, estado TEXT )");
+      db.execute("ALTER TABLE items ADD priority INT");
     },
    );
   }
 
 
   insert(Map lista)async{
-    InitDB();
+    // InitDB();
     _db.insert("shoplists", lista);
   }
 
 
   insert2(Map lista)async{
-    InitDB();
+    // InitDB();
     _db.insert("items", lista);
   }
 
 
  deleteitem( int item)async{
-    InitDB();
+    // InitDB();
     _db.rawQuery("DELETE FROM items WHERE id=$item");
   }
 
 
   deletelist(int lista)async{
-    InitDB();
+    // InitDB();
     _db.rawQuery("DELETE FROM items WHERE idl=$lista");
     _db.rawQuery("DELETE FROM shoplists WHERE id=$lista");
+    // _db.rawQuery("ALTER TABLE items ADD priority INT");
+
   }
 
 
@@ -57,7 +60,7 @@ class Shoplistdb{
 
 
   updateitems( int id, String nombre, String divisa, String url, int costo)async{
-    InitDB();
+    // InitDB();
     if(nombre!=""){
       _db.rawQuery("UPDATE items SET name = '$nombre' WHERE id=$id");
       print("editado a $nombre");}
@@ -74,7 +77,6 @@ class Shoplistdb{
 
 
   updatelist( int id ,String name)async{
-    InitDB();
     _db.rawQuery("UPDATE shoplists SET name= '$name'  WHERE id=$id");
   }
 
@@ -85,20 +87,74 @@ class Shoplistdb{
   
 
   Future<List<dynamic>> getAllLists( )async{
-    InitDB();
     List<dynamic>item=[];
-   List<Map<String, dynamic>> results = await _db.rawQuery("SELECT * FROM shoplists");
-    item= results;
-    return item;
+    List<Map<String, dynamic>> results = await Future.delayed( klk,()=>_db.rawQuery("SELECT * FROM shoplists")) ;
+    //  List<Map<String, dynamic>> results = await _db.query("shoplists");
+    
+    return results;
   }
 
 
   Future<List<dynamic>> getitems(int id )async{
-    InitDB();
+    
     List<dynamic>item=[];
-   List<Map<String, dynamic>> results = await _db.rawQuery("SELECT * FROM items WHERE idl=$id");
-    item= results;
+    if (id==9000){
+      List<Map<String, dynamic>> results = await Future.delayed( klk,()=> _db.rawQuery("SELECT * FROM items ORDER by precio"));
+      
+      item= results;
+    }else{
+      List<Map<String, dynamic>> results = await  Future.delayed( klk,()=> _db.rawQuery("SELECT * FROM items WHERE idl=$id"));
+      item= results;
+      // print(item);
+    }
     return item;
+  }
+  Future<int> dolar()async{
+    int dolarr;
+    List<dynamic>dolar=[];
+   List<Map<String, dynamic>> results = await Future.delayed( klk,()=>_db.rawQuery("SELECT * FROM dolar WHERE id=1"));
+    dolar= results;
+    dolar.forEach((element) {dolarr= element["precio"];});
+    // print( "klk $dolarr");
+
+
+    return dolarr;
+  }
+
+   Future<int> suma(int id ,int dolar)async{
+    //  print (" suma $dolar");
+    int suma=0;
+    List<dynamic>sumas=[];
+    if(id==9000){
+       List<Map<String, dynamic>> results = await  Future.delayed( klk,()=>_db.rawQuery("SELECT SUM(precio) FROM items WHERE estado=0  AND divisa='Peso';"));
+       sumas= results;
+    }
+    else{
+      List<Map<String, dynamic>> results = await  Future.delayed( klk,()=>_db.rawQuery("SELECT SUM(precio) FROM items WHERE idl=$id AND estado=0  AND divisa='Peso';"));
+      sumas= results;
+    }
+    sumas.forEach((element) {
+      suma= element["SUM(precio)"];
+    });
+
+    if(id==9000){
+       List<Map<String, dynamic>> results = await  Future.delayed( klk,()=>_db.rawQuery("SELECT SUM(precio) FROM items WHERE estado=0  AND divisa='Dolar';"));
+       sumas= results;
+    }
+    else{
+      List<Map<String, dynamic>> results = await  Future.delayed( klk,()=>_db.rawQuery("SELECT SUM(precio) FROM items WHERE idl=$id AND estado=0  AND divisa='Dolar';"));
+      sumas= results;
+    } 
+
+    sumas.forEach((element) {
+      if (suma==null){suma=0;}
+      if(element["SUM(precio)"]!=null){
+        int k= element["SUM(precio)"];
+      suma= suma +  (element["SUM(precio)"]*dolar);}
+    }); 
+
+
+    return suma;
   }
 
 

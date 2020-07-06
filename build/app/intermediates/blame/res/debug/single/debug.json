@@ -16,6 +16,10 @@
         "source": "C:\\Users\\Usuario\\.gradle\\caches\\transforms-2\\files-2.1\\a528b13ac93e64cafa3d0480e2c93207\\core-1.1.0\\res\\layout\\notification_template_part_chronometer.xml"
     },
     {
+        "merged": "C:\\Users\\Usuario\\Documents\\flutter\\lista-de-compras\\build\\app\\intermediates\\res\\merged\\debug\\layout_toast_custom.xml.flat",
+        "source": "C:\\Users\\Usuario\\Documents\\flutter\\lista-de-compras\\build\\fluttertoast\\intermediates\\packaged_res\\debug\\layout\\toast_custom.xml"
+    },
+    {
         "merged": "C:\\Users\\Usuario\\Documents\\flutter\\lista-de-compras\\build\\app\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4_notification_bg_low_pressed.9.png.flat",
         "source": "C:\\Users\\Usuario\\.gradle\\caches\\transforms-2\\files-2.1\\a528b13ac93e64cafa3d0480e2c93207\\core-1.1.0\\res\\drawable-hdpi-v4\\notification_bg_low_pressed.9.png"
     },
@@ -54,6 +58,10 @@
     {
         "merged": "C:\\Users\\Usuario\\Documents\\flutter\\lista-de-compras\\build\\app\\intermediates\\res\\merged\\debug\\layout-v21_notification_template_icon_group.xml.flat",
         "source": "C:\\Users\\Usuario\\.gradle\\caches\\transforms-2\\files-2.1\\a528b13ac93e64cafa3d0480e2c93207\\core-1.1.0\\res\\layout-v21\\notification_template_icon_group.xml"
+    },
+    {
+        "merged": "C:\\Users\\Usuario\\Documents\\flutter\\lista-de-compras\\build\\app\\intermediates\\res\\merged\\debug\\drawable_toast_bg.xml.flat",
+        "source": "C:\\Users\\Usuario\\Documents\\flutter\\lista-de-compras\\build\\fluttertoast\\intermediates\\packaged_res\\debug\\drawable\\toast_bg.xml"
     },
     {
         "merged": "C:\\Users\\Usuario\\Documents\\flutter\\lista-de-compras\\build\\app\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4_notification_bg_normal_pressed.9.png.flat",

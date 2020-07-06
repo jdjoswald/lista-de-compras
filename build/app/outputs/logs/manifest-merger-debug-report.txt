@@ -5,6 +5,7 @@ INJECTED from C:\Users\Usuario\Documents\flutter\lista-de-compras\android\app\sr
 INJECTED from C:\Users\Usuario\Documents\flutter\lista-de-compras\android\app\src\main\AndroidManifest.xml:1:1-30:12
 INJECTED from C:\Users\Usuario\Documents\flutter\lista-de-compras\android\app\src\main\AndroidManifest.xml:1:1-30:12
 MERGED from C:\Users\Usuario\Documents\flutter\lista-de-compras\android\app\src\main\AndroidManifest.xml:1:1-30:12
+MERGED from [:fluttertoast] C:\Users\Usuario\Documents\flutter\lista-de-compras\build\fluttertoast\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [:sqflite] C:\Users\Usuario\Documents\flutter\lista-de-compras\build\sqflite\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [:url_launcher] C:\Users\Usuario\Documents\flutter\lista-de-compras\build\url_launcher\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-14:12
 MERGED from [:url_launcher_web] C:\Users\Usuario\Documents\flutter\lista-de-compras\build\url_launcher_web\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-7:12
@@ -88,6 +89,8 @@ uses-sdk
 INJECTED from C:\Users\Usuario\Documents\flutter\lista-de-compras\android\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\Usuario\Documents\flutter\lista-de-compras\android\app\src\main\AndroidManifest.xml
 INJECTED from C:\Users\Usuario\Documents\flutter\lista-de-compras\android\app\src\main\AndroidManifest.xml
+MERGED from [:fluttertoast] C:\Users\Usuario\Documents\flutter\lista-de-compras\build\fluttertoast\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:fluttertoast] C:\Users\Usuario\Documents\flutter\lista-de-compras\build\fluttertoast\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:sqflite] C:\Users\Usuario\Documents\flutter\lista-de-compras\build\sqflite\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:sqflite] C:\Users\Usuario\Documents\flutter\lista-de-compras\build\sqflite\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [:url_launcher] C:\Users\Usuario\Documents\flutter\lista-de-compras\build\url_launcher\intermediates\library_manifest\debug\AndroidManifest.xml:5:5-44

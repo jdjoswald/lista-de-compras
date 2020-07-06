@@ -28,7 +28,7 @@ class _HomepagerState extends State<Homepager> {
         title: Text("Lista de compras"),
         actions: <Widget>[
           IconButton(icon: Icon(Icons.refresh, color: Colors.white,), onPressed:()=>refresh()),// ()=> _search(context),
-          IconButton(icon: Icon(Icons.attach_money, color: Colors.white,), onPressed: ()=> _precio(context),),
+          IconButton(icon: Icon(Icons.list, color: Colors.white,), onPressed: ()=> allitem(context),),
           IconButton(icon: Icon(Icons.info, color: Colors.white,), onPressed: ()=> _help(context), )
         ],
       ),
@@ -55,7 +55,7 @@ class _HomepagerState extends State<Homepager> {
            ));
           }
           else{
-           return Center(child: Text("data"));
+           return Center(child: CircularProgressIndicator());
           }
           
         },
@@ -78,7 +78,7 @@ class _HomepagerState extends State<Homepager> {
 
     else{
       return Center(
-      child: FlatButton(onPressed: ()=>refresh(), child: Text("refresh"))
+      child:CircularProgressIndicator(),
     );
     }  
   });}
@@ -167,29 +167,13 @@ class _HomepagerState extends State<Homepager> {
   }
 
 
-  _precio(BuildContext context) {
-    showDialog( 
-      context: context,
-      barrierDismissible: true,
-      builder: (context){
-        return AlertDialog(
-          title: Text("precio dolar"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min, 
-            children: <Widget>[  
-             _crearinput2(),
-            ],
-          ),
-           actions: <Widget>[
-            FlatButton(onPressed: ()=>cambio(), child: Text("OK")),
-          ],
-        );
-      }
-    );
-  }
-  cambio(){
-    db.updatedolar(dolar);
-    Navigator.of(context).pop();
+  allitem(BuildContext context) {
+
+             var route =new MaterialPageRoute(
+              builder: (BuildContext context)=>new ListaDeArticulos(idl:9000,nombrel:"todos")
+             );
+               Navigator.of(context).push(route);
+          
 
   }
 
